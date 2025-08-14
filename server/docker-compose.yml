@@ -1,0 +1,219 @@
+version: '3.8'
+
+services:
+  # WireGuard VPN
+  wireguard:
+    image: linuxserver/wireguard:latest
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - SERVERURL=auto
+      - SERVERPORT=51820
+      - PEERS=10
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.13.13.0
+      - ALLOWEDIPS=0.0.0.0/0
+    volumes:
+      - ./wireguard:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - "51820:51820/udp"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # ShadowSocks Server
+  shadowsocks:
+    image: shadowsocks/ssserver-rust:latest
+    container_name: shadowsocks
+    ports:
+      - "8388:8388"
+      - "8388:8388/udp"
+    volumes:
+      - ./shadowsocks/config.json:/etc/shadowsocks/config.json
+    command: ssserver -c /etc/shadowsocks/config.json
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # VLESS + Reality (Xray Core)
+  xray:
+    image: teddysun/xray:latest
+    container_name: xray
+    ports:
+      - "443:443"
+    volumes:
+      - ./xray/config.json:/etc/xray/config.json
+    command: xray run -c /etc/xray/config.json
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # Pi-hole DNS Protection
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8080:80"
+    environment:
+      TZ: 'UTC'
+      WEBPASSWORD: 'vpnshield2024'
+      PIHOLE_DNS_: '1.1.1.1;1.0.0.1'
+      DNSMASQ_USER: pihole
+      VIRTUAL_HOST: pihole.local
+      PROXY_LOCATION: pihole
+      ServerIP: 0.0.0.0
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    restart: unless-stopped
+    networks:
+      - vpn-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=vpnshield2024
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - pihole
+      - grafana
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # Redis for session management
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # PostgreSQL for user management
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: vpnshield
+      POSTGRES_USER: vpnshield
+      POSTGRES_PASSWORD: vpnshield2024
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - vpn-network
+
+  # API Server
+  api:
+    image: node:18-alpine
+    container_name: vpn-api
+    working_dir: /app
+    volumes:
+      - ./api:/app
+    ports:
+      - "4000:4000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://vpnshield:vpnshield2024@postgres:5432/vpnshield
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=vpnshield_jwt_secret_2024
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - vpn-network
+    command: npm start
+
+  # Web Dashboard
+  dashboard:
+    image: node:18-alpine
+    container_name: vpn-dashboard
+    working_dir: /app
+    volumes:
+      - ./dashboard:/app
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=production
+      - REACT_APP_API_URL=http://api:4000
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - vpn-network
+    command: npm start
+
+volumes:
+  prometheus_data:
+  grafana_data:
+  redis_data:
+  postgres_data:
+
+networks:
+  vpn-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
