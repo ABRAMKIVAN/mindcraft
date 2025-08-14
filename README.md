@@ -1,176 +1,349 @@
-# Mindcraft 🧠⛏️
+# VPN Shield - Cross-Platform VPN Application
 
-Crafting minds for Minecraft with LLMs and [Mineflayer!](https://prismarinejs.github.io/mineflayer/#/)
+A complete VPN solution with multi-protocol support, featuring a beautiful neomorphic UI, world map visualization, and enterprise-grade security.
 
-[FAQ](https://github.com/kolbytn/mindcraft/blob/main/FAQ.md) | [Discord Support](https://discord.gg/mp73p35dzC) | [Video Tutorial](https://www.youtube.com/watch?v=gRotoL8P8D8) | [Blog Post](https://kolbynottingham.com/mindcraft/) | [Contributor TODO](https://github.com/users/kolbytn/projects/1) | [Paper Website](https://mindcraft-minecollab.github.io/index.html) | [MineCollab](https://github.com/kolbytn/mindcraft/blob/main/minecollab.md) 
+## 🌟 Features
 
+### Core VPN Features
+- **Multi-Protocol Support**: WireGuard, ShadowSocks, VLESS+Reality
+- **One-Click Connect**: Simple connection with status indicators
+- **Kill Switch**: Automatic internet blocking if VPN drops
+- **DNS Protection**: Pi-hole integration for ad-blocking and privacy
+- **Auto-Protocol Selection**: Smart protocol switching based on location
 
-> [!Caution]
-Do not connect this bot to public servers with coding enabled. This project allows an LLM to write/execute code on your computer. The code is sandboxed, but still vulnerable to injection attacks. Code writing is disabled by default, you can enable it by setting `allow_insecure_coding` to `true` in `settings.js`. Ye be warned.
+### User Interface
+- **Neomorphic Design**: Soft shadows and rounded elements like Proton VPN
+- **Dark Mode Toggle**: Complete theme switching
+- **Interactive World Map**: Grayscale map with server locations and connection lines
+- **Real-time Stats**: Speed, ping, and IP address monitoring
+- **Server Sorting**: Sort by ping, load, or country
 
-## Requirements
+### Security & Privacy
+- **No-Logs Policy**: GDPR compliant with anonymized data
+- **Military-Grade Encryption**: ChaCha20 for WireGuard, TLS for VLESS
+- **Threat Detection**: Basic malware scanning in traffic
+- **Anonymous Login**: No email required for free tier
 
-- [Minecraft Java Edition](https://www.minecraft.net/en-us/store/minecraft-java-bedrock-edition-pc) (up to v1.21.1, recommend v1.21.1)
-- [Node.js Installed](https://nodejs.org/) (at least v18)
-- One of these: [OpenAI API Key](https://openai.com/blog/openai-api) | [Gemini API Key](https://aistudio.google.com/app/apikey) | [Anthropic API Key](https://docs.anthropic.com/claude/docs/getting-access-to-claude) | [Replicate API Key](https://replicate.com/) | [Hugging Face API Key](https://huggingface.co/) | [Groq API Key](https://console.groq.com/keys) | [Ollama Installed](https://ollama.com/download). | [Mistral API Key](https://docs.mistral.ai/getting-started/models/models_overview/) | [Qwen API Key [Intl.]](https://www.alibabacloud.com/help/en/model-studio/developer-reference/get-api-key)/[[cn]](https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen?) | [Novita AI API Key](https://novita.ai/settings?utm_source=github_mindcraft&utm_medium=github_readme&utm_campaign=link#key-management) |
+### Premium Features
+- **Unlimited Bandwidth**: No data caps
+- **Ad-Blocker**: Built-in ad and tracker blocking
+- **Priority Support**: Dedicated customer service
+- **Multi-Device Sync**: Settings across all devices
 
-## Install and Run
+## 🚀 Quick Start
 
-1. Make sure you have the requirements above.
+### Prerequisites
+- **PC**: Ubuntu 20.04+ or Windows 10+
+- **VPS**: Ubuntu 24.04 server (Hetzner, DigitalOcean, etc.)
+- **Node.js**: Version 18+ installed
+- **Docker**: For server deployment
 
-2. Clone or download this repository (big green button) 'git clone https://github.com/kolbytn/mindcraft.git'
+### 1. Local Development Setup
 
-3. Rename `keys.example.json` to `keys.json` and fill in your API keys (you only need one). The desired model is set in `andy.json` or other profiles. For other models refer to the table below.
+#### Install Dependencies
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/vpn-shield.git
+cd vpn-shield
 
-4. In terminal/command prompt, run `npm install` from the installed directory
+# Install Node.js dependencies
+npm install
 
-5. Start a minecraft world and open it to LAN on localhost port `55916`
+# Install React Native CLI (if not installed)
+npm install -g @react-native-community/cli
 
-6. Run `node main.js` from the installed directory
-
-If you encounter issues, check the [FAQ](https://github.com/kolbytn/mindcraft/blob/main/FAQ.md) or find support on [discord](https://discord.gg/mp73p35dzC). We are currently not very responsive to github issues. To run tasks please refer to [Minecollab Instructions](minecollab.md#installation)
-
-## Tasks
-
-Bot performance can be roughly evaluated with Tasks. Tasks automatically intialize bots with a goal to aquire specific items or construct predefined buildings, and remove the bot once the goal is achieved.
-
-To run tasks, you need python, pip, and optionally conda. You can then install dependencies with `pip install -r requirements.txt`. 
-
-Tasks are defined in json files in the `tasks` folder, and can be run with: `python tasks/run_task_file.py --task_path=tasks/example_tasks.json`
-
-For full evaluations, you will need to [download and install the task suite. Full instructions.](minecollab.md#installation)
-
-## Model Customization
-
-You can configure project details in `settings.js`. [See file.](settings.js)
-
-You can configure the agent's name, model, and prompts in their profile like `andy.json` with the `model` field. For comprehensive details, see [Model Specifications](#model-specifications).
-
-| API | Config Variable | Example Model name | Docs |
-|------|------|------|------|
-| `openai` | `OPENAI_API_KEY` | `gpt-4o-mini` | [docs](https://platform.openai.com/docs/models) |
-| `google` | `GEMINI_API_KEY` | `gemini-2.0-flash` | [docs](https://ai.google.dev/gemini-api/docs/models/gemini) |
-| `anthropic` | `ANTHROPIC_API_KEY` | `claude-3-haiku-20240307` | [docs](https://docs.anthropic.com/claude/docs/models-overview) |
-| `xai` | `XAI_API_KEY` | `grok-2-1212` | [docs](https://docs.x.ai/docs) |
-| `deepseek` | `DEEPSEEK_API_KEY` | `deepseek-chat` | [docs](https://api-docs.deepseek.com/) |
-| `ollama` (local) | n/a | `ollama/llama3.1` | [docs](https://ollama.com/library) |
-| `qwen` | `QWEN_API_KEY` | `qwen-max` | [Intl.](https://www.alibabacloud.com/help/en/model-studio/developer-reference/use-qwen-by-calling-api)/[cn](https://help.aliyun.com/zh/model-studio/getting-started/models) |
-| `mistral` | `MISTRAL_API_KEY` | `mistral-large-latest` | [docs](https://docs.mistral.ai/getting-started/models/models_overview/) |
-| `replicate` | `REPLICATE_API_KEY` | `replicate/meta/meta-llama-3-70b-instruct` | [docs](https://replicate.com/collections/language-models) |
-| `groq` (not grok) | `GROQCLOUD_API_KEY` | `groq/mixtral-8x7b-32768` | [docs](https://console.groq.com/docs/models) |
-| `huggingface` | `HUGGINGFACE_API_KEY` | `huggingface/mistralai/Mistral-Nemo-Instruct-2407` | [docs](https://huggingface.co/models) |
-| `novita` | `NOVITA_API_KEY` | `novita/deepseek/deepseek-r1` | [docs](https://novita.ai/model-api/product/llm-api?utm_source=github_mindcraft&utm_medium=github_readme&utm_campaign=link) |
-| `openrouter` | `OPENROUTER_API_KEY` | `openrouter/anthropic/claude-3.5-sonnet` | [docs](https://openrouter.ai/models) |
-| `glhf.chat` | `GHLF_API_KEY` | `glhf/hf:meta-llama/Llama-3.1-405B-Instruct` | [docs](https://glhf.chat/user-settings/api) |
-| `hyperbolic` | `HYPERBOLIC_API_KEY` | `hyperbolic/deepseek-ai/DeepSeek-V3` | [docs](https://docs.hyperbolic.xyz/docs/getting-started) |
-| `vllm` | n/a | `vllm/llama3` | n/a |
-
-If you use Ollama, to install the models used by default (generation and embedding), execute the following terminal command:
-`ollama pull llama3.1 && ollama pull nomic-embed-text`
-
-### Online Servers
-To connect to online servers your bot will need an official Microsoft/Minecraft account. You can use your own personal one, but will need another account if you want to connect too and play with it. To connect, change these lines in `settings.js`:
-```javascript
-"host": "111.222.333.444",
-"port": 55920,
-"auth": "microsoft",
-
-// rest is same...
+# For iOS development (macOS only)
+cd ios && pod install && cd ..
 ```
-> [!Important]
-> The bot's name in the profile.json must exactly match the Minecraft profile name! Otherwise the bot will spam talk to itself.
 
-To use different accounts, Mindcraft will connect with the account that the Minecraft launcher is currently using. You can switch accounts in the launcer, then run `node main.js`, then switch to your main account after the bot has connected.
+#### Run the Application
+```bash
+# Start Metro bundler
+npm start
 
-### Docker Container
+# Run on Android
+npm run android
 
-If you intend to `allow_insecure_coding`, it is a good idea to run the app in a docker container to reduce risks of running unknown code. This is strongly recommended before connecting to remote servers.
+# Run on iOS (macOS only)
+npm run ios
+
+# Run on Web
+npm run web
+```
+
+### 2. Server Deployment
+
+#### Option A: One-Click Setup (Recommended)
+```bash
+# SSH into your VPS
+ssh root@your-server-ip
+
+# Download and run the setup script
+curl -fsSL https://raw.githubusercontent.com/yourusername/vpn-shield/main/server/setup_vpn_server.sh | bash
+```
+
+#### Option B: Manual Docker Setup
+```bash
+# SSH into your VPS
+ssh root@your-server-ip
+
+# Install Docker and Docker Compose
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
+curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# Clone the repository
+git clone https://github.com/yourusername/vpn-shield.git
+cd vpn-shield/server
+
+# Start all services
+docker-compose up -d
+```
+
+### 3. Mobile App Build
+
+#### Android APK
+```bash
+# Navigate to project root
+cd vpn-shield
+
+# Build release APK
+cd android
+./gradlew assembleRelease
+
+# APK will be in: android/app/build/outputs/apk/release/app-release.apk
+```
+
+#### iOS App Store
+```bash
+# Open Xcode project
+open ios/VPNApp.xcworkspace
+
+# Configure signing and build for App Store
+# Archive and upload through Xcode
+```
+
+### 4. Web Deployment (Vercel)
 
 ```bash
-docker run -i -t --rm -v $(pwd):/app -w /app -p 3000-3003:3000-3003 node:latest node main.js
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy to Vercel
+vercel --prod
 ```
-or simply
+
+## 📱 App Configuration
+
+### Environment Variables
+Create a `.env` file in the project root:
+
+```env
+# Supabase Configuration
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# VPN Server Configuration
+VPN_SERVER_URL=your_vpn_server_ip
+WIREGUARD_PORT=51820
+SHADOWSOCKS_PORT=8388
+VLESS_PORT=443
+
+# API Configuration
+API_BASE_URL=https://your-api-domain.com
+```
+
+### Supabase Setup
+1. Create a Supabase project at [supabase.com](https://supabase.com)
+2. Enable Authentication with email and anonymous sign-in
+3. Create the following tables:
+
+```sql
+-- Users table
+CREATE TABLE users (
+  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  username TEXT UNIQUE,
+  email TEXT UNIQUE,
+  is_premium BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- User subscriptions
+CREATE TABLE user_subscriptions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id),
+  status TEXT DEFAULT 'inactive',
+  plan_type TEXT DEFAULT 'free',
+  expires_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+## 🛠️ Server Management
+
+### Management Commands
 ```bash
-docker-compose up
+# Start all VPN services
+vpn-manager start
+
+# Stop all VPN services
+vpn-manager stop
+
+# Check service status
+vpn-manager status
+
+# View logs
+vpn-manager logs
+
+# Generate client configuration
+generate-client-config wireguard client1
+generate-client-config shadowsocks client1
+generate-client-config vless client1
+
+# Create backup
+vpn-backup
 ```
 
-When running in docker, if you want the bot to join your local minecraft server, you have to use a special host address `host.docker.internal` to call your localhost from inside your docker container. Put this into your [settings.js](settings.js):
+### Web Interfaces
+- **Pi-hole Dashboard**: `http://your-server-ip:8080`
+- **Grafana Monitoring**: `http://your-server-ip:3000`
+- **Prometheus Metrics**: `http://your-server-ip:9090`
 
-```javascript
-"host": "host.docker.internal", // instead of "localhost", to join your local minecraft from inside the docker container
+### Port Configuration
+| Service | Port | Protocol | Description |
+|---------|------|----------|-------------|
+| WireGuard | 51820 | UDP | VPN tunnel |
+| ShadowSocks | 8388 | TCP/UDP | Proxy server |
+| VLESS | 443 | TCP | Anti-detection proxy |
+| Pi-hole | 53 | TCP/UDP | DNS server |
+| Pi-hole Web | 8080 | TCP | Web interface |
+| Grafana | 3000 | TCP | Monitoring dashboard |
+| Prometheus | 9090 | TCP | Metrics collection |
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+#### App Won't Start
+```bash
+# Clear Metro cache
+npm start -- --reset-cache
+
+# Clear React Native cache
+npx react-native clean
+
+# Reinstall dependencies
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-To connect to an unsupported minecraft version, you can try to use [viaproxy](services/viaproxy/README.md)
+#### Server Connection Issues
+```bash
+# Check firewall status
+ufw status
 
-# Bot Profiles
+# Test port connectivity
+telnet your-server-ip 51820
 
-Bot profiles are json files (such as `andy.json`) that define:
+# Check service logs
+vpn-manager logs
 
-1. Bot backend LLMs to use for talking, coding, and embedding.
-2. Prompts used to influence the bot's behavior.
-3. Examples help the bot perform tasks.
-
-## Model Specifications
-
-LLM models can be specified simply as `"model": "gpt-4o"`. However, you can use different models for chat, coding, and embeddings. 
-You can pass a string or an object for these fields. A model object must specify an `api`, and optionally a `model`, `url`, and additional `params`.
-
-```json
-"model": {
-  "api": "openai",
-  "model": "gpt-4o",
-  "url": "https://api.openai.com/v1/",
-  "params": {
-    "max_tokens": 1000,
-    "temperature": 1
-  }
-},
-"code_model": {
-  "api": "openai",
-  "model": "gpt-4",
-  "url": "https://api.openai.com/v1/"
-},
-"vision_model": {
-  "api": "openai",
-  "model": "gpt-4o",
-  "url": "https://api.openai.com/v1/"
-},
-"embedding": {
-  "api": "openai",
-  "url": "https://api.openai.com/v1/",
-  "model": "text-embedding-ada-002"
-}
-
+# Restart services
+vpn-manager restart
 ```
 
-`model` is used for chat, `code_model` is used for newAction coding, `vision_model` is used for image interpretation, and `embedding` is used to embed text for example selection. If `code_model` or `vision_model` is not specified, `model` will be used by default. Not all APIs support embeddings or vision.
+#### Build Errors
+```bash
+# Android build issues
+cd android
+./gradlew clean
+./gradlew assembleRelease
 
-All apis have default models and urls, so those fields are optional. The `params` field is optional and can be used to specify additional parameters for the model. It accepts any key-value pairs supported by the api. Is not supported for embedding models.
-
-## Embedding Models
-
-Embedding models are used to embed and efficiently select relevant examples for conversation and coding.
-
-Supported Embedding APIs: `openai`, `google`, `replicate`, `huggingface`, `novita`
-
-If you try to use an unsupported model, then it will default to a simple word-overlap method. Expect reduced performance, recommend mixing APIs to ensure embedding support.
-
-## Specifying Profiles via Command Line
-
-By default, the program will use the profiles specified in `settings.js`. You can specify one or more agent profiles using the `--profiles` argument: `node main.js --profiles ./profiles/andy.json ./profiles/jill.json`
-
-## Patches
-
-Some of the node modules that we depend on have bugs in them. To add a patch, change your local node module file and run `npx patch-package [package-name]`
-
-## Citation:
-
+# iOS build issues
+cd ios
+pod deintegrate
+pod install
 ```
-@article{mindcraft2025,
-  title = {Collaborating Action by Action: A Multi-agent LLM Framework for Embodied Reasoning},
-  author = {White*, Isadora and Nottingham*, Kolby and Maniar, Ayush and Robinson, Max and Lillemark, Hansen and Maheshwari, Mehul and Qin, Lianhui and Ammanabrolu, Prithviraj},
-  journal = {arXiv preprint arXiv:2504.17950},
-  year = {2025},
-  url = {https://arxiv.org/abs/2504.17950},
-}
+
+### Performance Optimization
+
+#### Server Optimization
+```bash
+# Enable BBR congestion control
+echo 'net.core.default_qdisc=fq' >> /etc/sysctl.conf
+echo 'net.ipv4.tcp_congestion_control=bbr' >> /etc/sysctl.conf
+sysctl -p
+
+# Optimize network settings
+echo 'net.core.rmem_max=134217728' >> /etc/sysctl.conf
+echo 'net.core.wmem_max=134217728' >> /etc/sysctl.conf
+sysctl -p
 ```
+
+#### App Performance
+- Enable Hermes engine for React Native
+- Use production builds for testing
+- Optimize images and assets
+- Implement lazy loading for server lists
+
+## 🔒 Security Considerations
+
+### Server Security
+- Change default passwords
+- Use SSH key authentication
+- Enable fail2ban protection
+- Regular security updates
+- Monitor access logs
+
+### App Security
+- Implement certificate pinning
+- Use secure storage for sensitive data
+- Validate all user inputs
+- Implement rate limiting
+- Regular dependency updates
+
+## 📊 Monitoring & Analytics
+
+### Metrics Collection
+- Connection success rates
+- Server performance metrics
+- User behavior analytics
+- Error tracking and reporting
+
+### Alerts
+- Server downtime notifications
+- High load alerts
+- Security incident notifications
+- Performance degradation warnings
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: [docs.vpnshield.com](https://docs.vpnshield.com)
+- **Issues**: [GitHub Issues](https://github.com/yourusername/vpn-shield/issues)
+- **Discord**: [VPN Shield Community](https://discord.gg/vpnshield)
+- **Email**: support@vpnshield.com
+
+## 🙏 Acknowledgments
+
+- [React Native](https://reactnative.dev/) for the mobile framework
+- [WireGuard](https://www.wireguard.com/) for the VPN protocol
+- [Xray Core](https://github.com/XTLS/Xray-core) for VLESS implementation
+- [Pi-hole](https://pi-hole.net/) for DNS protection
+- [Supabase](https://supabase.com/) for backend services
+
+---
+
+**Made with ❤️ by the VPN Shield Team**
